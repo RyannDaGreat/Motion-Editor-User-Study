@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 90%;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
@@ -30,7 +30,7 @@
         
         video {
             width: 100%;
-            max-width: 600px;
+            /* max-width: 600px; */
             height: auto;
             display: block;
             margin: 0 auto 20px auto;
@@ -83,6 +83,9 @@
     
     <div id="video-containers"></div>
     
+	The leftmost input is the input video, and the next two are outputs of different algorithms.
+	Please select the one where the dots on the input video best correspond to the outputs.
+
     <div class="results-container">
         <div class="results-title">Results (JSON Format):</div>
         <textarea id="results" readonly placeholder="Results will appear here as you make selections..."></textarea>
@@ -90,12 +93,12 @@
 
     <script>
         const videos = [
-            'video_pairs/ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4',
-            'video_pairs/ATI_0004--[Seed 6227] Boat_ Move Test.mp4',
-            'video_pairs/ATI_0018--[Seed 2] Kittycat Fish_copy.mp4',
-            'video_pairs/ATI_0019--[Seed 5819] Cheerleader.mp4',
-            'video_pairs/ATI_0030--[Seed 8184] Judge_ Walk Out.mp4',
-            'video_pairs/ATI_0038--[Seed 1515] Blacks Freeze Camera_copy.mp4'
+            'video_pairs/ATI_0000--[Seed 8464] Blacks Freeze Camera_15fps.mp4',
+            'video_pairs/ATI_0004--[Seed 6227] Boat_ Move Test_15fps.mp4',
+            'video_pairs/ATI_0018--[Seed 2] Kittycat Fish_copy_15fps.mp4',
+            'video_pairs/ATI_0019--[Seed 5819] Cheerleader_15fps.mp4',
+            'video_pairs/ATI_0030--[Seed 8184] Judge_ Walk Out_15fps.mp4',
+            'video_pairs/ATI_0038--[Seed 1515] Blacks Freeze Camera_copy_15fps.mp4'
         ];
         
         let results = {};
@@ -111,7 +114,7 @@
             
             const title = document.createElement('div');
             title.className = 'video-title';
-            title.textContent = `Video ${index + 1}`;
+            title.textContent = `Video ${index}`;
             
             const video = document.createElement('video');
             video.src = videoPath;
