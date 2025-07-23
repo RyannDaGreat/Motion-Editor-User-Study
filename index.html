@@ -81,14 +81,20 @@
 <body>
     <h1 style="text-align: center; margin-bottom: 30px;">Video User Study</h1>
     
-    <div id="video-containers"></div>
+    <div style="background-color: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <p><strong>Instructions:</strong></p>
+        <p>The leftmost input is the input video, and the next two are outputs of different algorithms.</p>
+        <p>Please select the one where the dots on the input video best correspond to the outputs.</p>
+    </div>
     
-	The leftmost input is the input video, and the next two are outputs of different algorithms.
-	Please select the one where the dots on the input video best correspond to the outputs.
+    <div id="video-containers"></div>
 
     <div class="results-container">
         <div class="results-title">Results (JSON Format):</div>
         <textarea id="results" readonly placeholder="Results will appear here as you make selections..."></textarea>
+        <p style="margin-top: 15px; font-weight: bold; color: #333;">
+            Once completed, please send the output text JSON above to: <a href="mailto:rburgert@cs.stonybrook.edu">rburgert@cs.stonybrook.edu</a>
+        </p>
     </div>
 
     <script>
