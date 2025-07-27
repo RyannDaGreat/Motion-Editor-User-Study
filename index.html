@@ -36,14 +36,34 @@
             margin: 0 auto 20px auto;
         }
         
-        .options {
-            text-align: center;
+        .questions {
             margin-bottom: 20px;
         }
         
+        .question {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        
         .option {
-            margin: 0 15px;
             font-size: 16px;
+            display: flex;
+            align-items: center;
         }
         
         input[type="radio"] {
@@ -83,8 +103,10 @@
     
     <div style="background-color: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <p><strong>Instructions:</strong></p>
-        <p>The leftmost input is the input video, and the next two are outputs of different algorithms.</p>
-        <p>Please select the one where the dots on the input video best correspond to the outputs.</p>
+        <p>You will be shown pairs of videos from two different motion editing methods. For each pair, please answer the three questions below by selecting your preference.</p>
+        <p><strong>Note:</strong> Both methods receive the same input video and desired motion trajectories. Your task is to evaluate which method produces better results.</p>
+        <p><strong>How to evaluate:</strong> The video edits are indicated by the change in position of the colored dots. Look at matching dots from input to output video to determine the intended edits and how well each method preserves content while achieving the desired motion changes.</p>
+        <p><strong>When finished:</strong> Click the email link at the bottom of the page and it will prepare an email with your results to send.</p>
     </div>
     
     <div id="video-containers"></div>
@@ -93,7 +115,7 @@
         <div class="results-title">Results (JSON Format):</div>
         <textarea id="results" readonly placeholder="Results will appear here as you make selections..."></textarea>
         <p style="margin-top: 15px; font-weight: bold; color: #333;">
-            Once completed, please send the output text JSON above to: <a href="mailto:rburgert@cs.stonybrook.edu">rburgert@cs.stonybrook.edu</a>
+            Once completed, please click here to send results: <a href="#" id="emailLink">rburgert@cs.stonybrook.edu</a>
         </p>
     </div>
 
@@ -126,7 +148,14 @@
         
         function updateResults() {
             const resultsTextarea = document.getElementById('results');
-            resultsTextarea.value = JSON.stringify(results, null, 2);
+            const jsonData = JSON.stringify(results, null, 2);
+            resultsTextarea.value = jsonData;
+            
+            // Update email link with JSON data
+            const emailLink = document.getElementById('emailLink');
+            const subject = 'Video User Study Results';
+            const body = `Here are my user study results:\n\n${jsonData}`;
+            emailLink.href = `mailto:rburgert@cs.stonybrook.edu?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
         
         function createVideoContainer(videoPath, index) {
@@ -135,7 +164,7 @@
             
             const title = document.createElement('div');
             title.className = 'video-title';
-            title.textContent = `Video ${index}`;
+            title.textContent = `Video Pair ${index}`;
             
             const video = document.createElement('video');
             video.src = videoPath;
@@ -144,45 +173,69 @@
             video.muted = true; // Required for autoplay in most browsers
             video.loop = true;
             
-            const options = document.createElement('div');
-            options.className = 'options';
+            const questionsContainer = document.createElement('div');
+            questionsContainer.className = 'questions';
             
-            const optionA = document.createElement('label');
-            optionA.className = 'option';
-            const radioA = document.createElement('input');
-            radioA.type = 'radio';
-            radioA.name = `video_${index}`;
-            radioA.value = 'A';
-            radioA.addEventListener('change', () => {
-                if (radioA.checked) {
-                    results[index] = 'A';
-                    updateResults();
-                }
+            const questions = [
+                "Q1: Which video better preserves the input video's content?",
+                "Q2: Which video better reflects the desired motion?",
+                "Q3: Which video is overall a better edit of the input video?"
+            ];
+            
+            questions.forEach((questionText, qIndex) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                
+                const questionTitle = document.createElement('div');
+                questionTitle.className = 'question-title';
+                questionTitle.textContent = questionText;
+                
+                const options = document.createElement('div');
+                options.className = 'options';
+                
+                const optionOurs = document.createElement('label');
+                optionOurs.className = 'option';
+                const radioOurs = document.createElement('input');
+                radioOurs.type = 'radio';
+                radioOurs.name = `video_${index}_q${qIndex}`;
+                radioOurs.value = 'A';
+                radioOurs.addEventListener('change', () => {
+                    if (radioOurs.checked) {
+                        if (!results[index]) results[index] = {};
+                        results[index][`q${qIndex + 1}`] = 'A';
+                        updateResults();
+                    }
+                });
+                optionOurs.appendChild(radioOurs);
+                optionOurs.appendChild(document.createTextNode('A'));
+                
+                const optionATI = document.createElement('label');
+                optionATI.className = 'option';
+                const radioATI = document.createElement('input');
+                radioATI.type = 'radio';
+                radioATI.name = `video_${index}_q${qIndex}`;
+                radioATI.value = 'B';
+                radioATI.addEventListener('change', () => {
+                    if (radioATI.checked) {
+                        if (!results[index]) results[index] = {};
+                        results[index][`q${qIndex + 1}`] = 'B';
+                        updateResults();
+                    }
+                });
+                optionATI.appendChild(radioATI);
+                optionATI.appendChild(document.createTextNode('B'));
+                
+                options.appendChild(optionOurs);
+                options.appendChild(optionATI);
+                
+                questionDiv.appendChild(questionTitle);
+                questionDiv.appendChild(options);
+                questionsContainer.appendChild(questionDiv);
             });
-            optionA.appendChild(radioA);
-            optionA.appendChild(document.createTextNode('Output A'));
-            
-            const optionB = document.createElement('label');
-            optionB.className = 'option';
-            const radioB = document.createElement('input');
-            radioB.type = 'radio';
-            radioB.name = `video_${index}`;
-            radioB.value = 'B';
-            radioB.addEventListener('change', () => {
-                if (radioB.checked) {
-                    results[index] = 'B';
-                    updateResults();
-                }
-            });
-            optionB.appendChild(radioB);
-            optionB.appendChild(document.createTextNode('Output B'));
-            
-            options.appendChild(optionA);
-            options.appendChild(optionB);
             
             container.appendChild(title);
             container.appendChild(video);
-            container.appendChild(options);
+            container.appendChild(questionsContainer);
             
             return container;
         }
