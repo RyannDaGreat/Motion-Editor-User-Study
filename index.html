@@ -103,9 +103,9 @@
     
     <div style="background-color: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         <p><strong>Instructions:</strong></p>
-        <p>You will be shown pairs of videos from two different motion editing methods. For each pair, please answer the three questions below by selecting your preference.</p>
-        <p><strong>Note:</strong> Both methods receive the same input video and desired motion trajectories. Your task is to evaluate which method produces better results.</p>
-        <p><strong>How to evaluate:</strong> The video edits are indicated by the change in position of the colored dots. Look at matching dots from input to output video to determine the intended edits and how well each method preserves content while achieving the desired motion changes.</p>
+        <p>You will be shown videos comparing five different motion editing methods side by side: Input (with original motion), Ours, ATI, ReVideo, and GWTF. For each video, please answer the three questions below by selecting your preference.</p>
+        <p><strong>Note:</strong> All methods receive the same input video and desired motion trajectories. Your task is to evaluate which method produces better results.</p>
+        <p><strong>How to evaluate:</strong> The video edits are indicated by the change in position of the colored dots (shown on Input, Ours, and ATI). Look at matching dots from input to output to determine the intended edits and how well each method preserves content while achieving the desired motion changes.</p>
         <p><strong>When finished:</strong> Click the email link at the bottom of the page and it will prepare an email with your results to send.</p>
     </div>
     
@@ -121,27 +121,26 @@
 
     <script>
         const videos = [
-            "video_pairs_20/[Failure] Stop Sign Lady_copy6.mp4ATI_0097--[Seed 4370] [Failure] Stop Sign Lady_copy6.mp4",
-            "video_pairs_20/Truck Before Cab_copy1.mp4ATI_0055--[Seed 5072] Truck Before Cab_copy1.mp4",
-            "video_pairs_20/Truck Before Cab_copy1.mp4ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4",
-            "video_pairs_20/Sora Basketball_ The ball goes into the hoop_copy3.mp4ATI_0071--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4",
-            "video_pairs_20/Shakycam.mp4ATI_0118--[Seed 9471] Shakycam.mp4",
-            "video_pairs_20/Reverse Windmills.mp4ATI_0064--[Seed 9651] Reverse Windmills.mp4",
-            "video_pairs_20/Move the car faster forward.mp4ATI_0099--[Seed 8917] Move the car faster forward.mp4",
-            "video_pairs_20/Motorcycle Chase_ The motorcycle chases the car_copy1.mp4ATI_0074--[Seed 1579] Motorcycle Chase_ The motorcycle chases the car_copy1.mp4",
-            "video_pairs_20/Kittycat Fish.mp4ATI_0071--[Seed 2] Kittycat Fish.mp4",
-            "video_pairs_20/Judge_ Walk Out_copy1.mp4ATI_0032--[Seed 5176] Judge_ Walk Out_copy1.mp4",
-            "video_pairs_20/Judge_ Walk Out.mp4ATI_0021--[Seed 8184] Judge_ Walk Out.mp4",
-            "video_pairs_20/Judge_ Walk In From Right + Zoom_copy1.mp4ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4",
-            "video_pairs_20/Hot Air Baloons_ Slow camera, make baloons rise.mp4ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4",
-            "video_pairs_20/City Biker.mp4ATI_0065--[Seed 9567] City Biker.mp4",
-            "video_pairs_20/Cheerleader.mp4ATI_0019--[Seed 5819] Cheerleader.mp4",
-            "video_pairs_20/Candle Grab StopCam.mp4ATI_0065--[Seed 4764] Candle Grab StopCam.mp4",
-            "video_pairs_20/Boat_ Move Test.mp4ATI_0004--[Seed 6227] Boat_ Move Test.mp4",
-            "video_pairs_20/Blacks Freeze Camera_copy.mp4ATI_0038--[Seed 1515] Blacks Freeze Camera_copy.mp4",
-            "video_pairs_20/Blacks Freeze Camera.mp4ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4",
-            "video_pairs_20/Bichon + Corgi _ Corgi Stay Behind.mp4ATI_0053--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind.mp4",
-            "video_pairs_20/Bichon + Corgi _ Bichon Stay Behind_copy3.mp4ATI_0025--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy3.mp4",
+            "video_pairs_complete/Bichon + Corgi _ Bichon Stay Behind_copy3.mp4ATI_0025--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy3.mp4",
+            "video_pairs_complete/Bichon + Corgi _ Corgi Stay Behind.mp4ATI_0053--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind.mp4",
+            "video_pairs_complete/Blacks Freeze Camera.mp4ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4",
+            "video_pairs_complete/Blacks Freeze Camera_copy.mp4ATI_0038--[Seed 1515] Blacks Freeze Camera_copy.mp4",
+            "video_pairs_complete/Boat_ Move Test.mp4ATI_0004--[Seed 6227] Boat_ Move Test.mp4",
+            "video_pairs_complete/Candle Grab StopCam.mp4ATI_0065--[Seed 4764] Candle Grab StopCam.mp4",
+            "video_pairs_complete/Cheerleader.mp4ATI_0019--[Seed 5819] Cheerleader.mp4",
+            "video_pairs_complete/City Biker.mp4ATI_0065--[Seed 9567] City Biker.mp4",
+            "video_pairs_complete/Hot Air Baloons_ Slow camera, make baloons rise.mp4ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4",
+            "video_pairs_complete/Judge_ Walk In From Right + Zoom_copy1.mp4ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4",
+            "video_pairs_complete/Judge_ Walk Out.mp4ATI_0021--[Seed 8184] Judge_ Walk Out.mp4",
+            "video_pairs_complete/Judge_ Walk Out_copy1.mp4ATI_0032--[Seed 5176] Judge_ Walk Out_copy1.mp4",
+            "video_pairs_complete/Motorcycle Chase_ The motorcycle chases the car_copy1.mp4ATI_0074--[Seed 1579] Motorcycle Chase_ The motorcycle chases the car_copy1.mp4",
+            "video_pairs_complete/Move the car faster forward.mp4ATI_0099--[Seed 8917] Move the car faster forward.mp4",
+            "video_pairs_complete/Reverse Windmills.mp4ATI_0064--[Seed 9651] Reverse Windmills.mp4",
+            "video_pairs_complete/Shakycam.mp4ATI_0118--[Seed 9471] Shakycam.mp4",
+            "video_pairs_complete/Sora Basketball_ The ball goes into the hoop_copy3.mp4ATI_0071--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4",
+            "video_pairs_complete/Truck Before Cab_copy1.mp4ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4",
+            "video_pairs_complete/Truck Before Cab_copy1.mp4ATI_0055--[Seed 5072] Truck Before Cab_copy1.mp4",
+            "video_pairs_complete/[Failure] Stop Sign Lady_copy6.mp4ATI_0097--[Seed 4370] [Failure] Stop Sign Lady_copy6.mp4",
         ];
         
         let results = {};
@@ -177,9 +176,9 @@
             questionsContainer.className = 'questions';
             
             const questions = [
-                "Q1: Which video better preserves the input video's content?",
-                "Q2: Which video better reflects the desired motion?",
-                "Q3: Which video is overall a better edit of the input video?"
+                "Q1: Which method best preserves the input video's content?",
+                "Q2: Which method best reflects the desired motion?",
+                "Q3: Which method produces the overall best edit?"
             ];
             
             questions.forEach((questionText, qIndex) => {
@@ -193,40 +192,25 @@
                 const options = document.createElement('div');
                 options.className = 'options';
                 
-                const optionOurs = document.createElement('label');
-                optionOurs.className = 'option';
-                const radioOurs = document.createElement('input');
-                radioOurs.type = 'radio';
-                radioOurs.name = `video_${index}_q${qIndex}`;
-                radioOurs.value = 'A';
-                radioOurs.addEventListener('change', () => {
-                    if (radioOurs.checked) {
-                        if (!results[index]) results[index] = {};
-                        results[index][`q${qIndex + 1}`] = 'A';
-                        updateResults();
-                    }
+                const methods = ['Ours', 'ATI', 'ReVideo', 'GWTF'];
+                methods.forEach((method, mIndex) => {
+                    const optionLabel = document.createElement('label');
+                    optionLabel.className = 'option';
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `video_${index}_q${qIndex}`;
+                    radio.value = method;
+                    radio.addEventListener('change', () => {
+                        if (radio.checked) {
+                            if (!results[index]) results[index] = {};
+                            results[index][`q${qIndex + 1}`] = method;
+                            updateResults();
+                        }
+                    });
+                    optionLabel.appendChild(radio);
+                    optionLabel.appendChild(document.createTextNode(method));
+                    options.appendChild(optionLabel);
                 });
-                optionOurs.appendChild(radioOurs);
-                optionOurs.appendChild(document.createTextNode('A'));
-                
-                const optionATI = document.createElement('label');
-                optionATI.className = 'option';
-                const radioATI = document.createElement('input');
-                radioATI.type = 'radio';
-                radioATI.name = `video_${index}_q${qIndex}`;
-                radioATI.value = 'B';
-                radioATI.addEventListener('change', () => {
-                    if (radioATI.checked) {
-                        if (!results[index]) results[index] = {};
-                        results[index][`q${qIndex + 1}`] = 'B';
-                        updateResults();
-                    }
-                });
-                optionATI.appendChild(radioATI);
-                optionATI.appendChild(document.createTextNode('B'));
-                
-                options.appendChild(optionOurs);
-                options.appendChild(optionATI);
                 
                 questionDiv.appendChild(questionTitle);
                 questionDiv.appendChild(options);
