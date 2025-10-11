@@ -1,4 +1,190 @@
-<!DOCTYPE html>
+import rp
+
+chosen_names = [
+    "[Seed 2] Kittycat Fish",
+    "[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise",
+    "[Seed 950] City Biker",
+    "[Seed 1131] Kids Racing",
+    "[Seed 1201] Move the car faster forward_copy3",
+    "[Seed 1514] Hot Air Baloons_ Swap all three and make them rise",
+    "[Seed 1515] Blacks Freeze Camera_copy",
+    "[Seed 1515] Blacks Freeze Camera_copy2",
+    "[Seed 1579] Motorcycle Chase_ The motorcycle chases the car_copy1",
+    "[Seed 2222] Blacks Freeze Camera",
+    "[Seed 4360] Hot Air Baloons_ Slow camera, make baloons rise",
+    "[Seed 4370] [Failure] Stop Sign Lady_copy6",
+    "[Seed 4409] Cheerleader Two_copy",
+    "[Seed 4764] Candle Grab StopCam",
+    "[Seed 5065] Bichon + Corgi _ Bichon Stays Behind",
+    "[Seed 5072] Truck Before Cab_copy1",
+    "[Seed 5176] Judge_ Walk In From Right + Zoom_copy1",
+    "[Seed 5176] Judge_ Walk Out_copy1",
+    "[Seed 5280] Candle Grab StopCam",
+    "[Seed 5440] Penguins Walk Together",
+    "[Seed 5666] Candle Grab StopCam",
+    "[Seed 5819] Cheerleader",
+    "[Seed 6227] Boat_ Move Test",
+    "[Seed 6303] Sora Basketball_ The ball goes into the hoop",
+    "[Seed 6933] [Failure] Stop Sign Lady",
+    "[Seed 7945] Bichon + Corgi _ Bichon Stay Behind",
+    "[Seed 8184] Judge_ Walk Out",
+    "[Seed 8464] Blacks Freeze Camera",
+    "[Seed 8848] Shakycam",
+    "[Seed 8917] Move the car faster forward",
+    "[Seed 9221] Knight Chases Windmill [Slower]",
+    "[Seed 9471] Shakycam",
+    "[Seed 9567] City Biker",
+    "[Seed 9593] Move the car faster forward",
+    "[Seed 9651] Reverse Windmills",
+    "[Seed 9995] Bichon + Corgi _ Corgi Stay Behind",
+    "[Seed 9995] Blacks Swan Go Faster.mp4",
+]
+
+chosen_seeds = [
+    "[Seed 7945]",
+    "[Seed 9995]",
+    "[Seed 8464]",
+    "[Seed 1515]",
+    "[Seed 6227]",
+    "[Seed 4764]",
+    "[Seed 5819]",
+    "[Seed 9567]",
+    "[Seed 875]",
+    "[Seed 5176]",
+    "[Seed 8184]",
+    "[Seed 5176]",
+    "[Seed 2]",
+    "[Seed 1579]",
+    "[Seed 8917]",
+    "[Seed 9651]",
+    "[Seed 9471]",
+    "[Seed 6303]",
+    "[Seed 5072]",
+    "[Seed 5072]",
+    "[Seed 4370]",
+]
+
+chosen_names = [x for x in chosen_names if rp.contains_any(x,chosen_seeds)]
+
+ati_glob     = "/Users/ryan/CleanCode/Projects/Google2025_Paper/ati_outputs/*mp4"
+gwtf_glob    = "/Users/ryan/CleanCode/Projects/Google2025_Paper/GWTF/*.mp4"
+revideo_glob = "/Users/ryan/CleanCode/Projects/Google2025_Paper/ReVideo/slowmo_NoDots_result_*.mp4"
+edits_folder = "/Users/ryan/CleanCode/Projects/Google2025_Paper/inferblobs_edit_results"
+
+
+
+# Make pairs
+def get_pairs():
+    pairs = []
+    edit_folders = rp.get_subfolders(edits_folder)
+    ati_videos     = rp.glob(ati_glob)
+    gwtf_videos    = rp.glob(gwtf_glob)
+    revideo_videos = rp.glob(revideo_glob)
+    
+    filtered_names = [
+        x
+        for x in chosen_names
+        if all(
+            any(x in name for name in y)
+            for y in [ati_videos, gwtf_videos, revideo_videos]
+        )
+    ]
+
+    rp.print_lines(filtered_names)
+
+    for name in filtered_names:
+        ati_video_options     = [x for x in ati_videos     if name in x]
+        revideo_video_options = [x for x in revideo_videos if name in x]
+        gwtf_video_options    = [x for x in gwtf_videos    if name in x]
+        edit_folder_options   = [x for x in edit_folders   if name in x]
+        new_pairs = list(
+            rp.cartesian_product(
+                edit_folder_options,
+                ati_video_options,
+                revideo_video_options,
+                gwtf_video_options,
+                edit_folder_options,
+            )
+        )
+        for pair in new_pairs:
+            pairs.append((name,pair))
+    return pairs
+
+
+pairs = get_pairs()
+
+
+def process(pair):
+    def rgbyte(x):
+        return rp.as_rgb_images(rp.as_byte_images(x))
+
+    def normalize_video(video):
+        video = rp.resize_list(video, 49)
+        video = rp.resize_images(video, size=(480, 720))
+        return video
+
+    def add_tracks(video, track_video):
+        video = rp.as_float_images(video)
+        track_video = rp.as_float_images(track_video)
+        alpha = track_video.max(3, keepdims=True) * 2
+        alpha = rp.np.clip(alpha, 0, 1)
+        output = alpha * track_video + (1 - alpha) * video
+        return rgbyte(output)
+
+    try:
+        name, (edit_folder_path, ati_video_path, revideo_video_path, gwtf_video_path, _) = pair
+
+        out_name=rp.rp.get_file_name(ati_video_path)
+        out_path = 'video_pairs/'+out_name
+
+        if rp.file_exists(out_path):
+            print("SKIPPING",out_path)
+            return out_path
+
+        counter_video        = rp.load_video_via_decord(rp.path_join(edit_folder_path, "counter_video.mp4"))
+        output_video         = rp.load_video_via_decord(rp.path_join(edit_folder_path, "output_video.mp4"))
+        tracks_video         = rp.load_video_via_decord(rp.path_join(edit_folder_path, "counter_tracking_frames.mp4"))
+        counter_tracks_video = rp.load_video_via_decord(rp.path_join(edit_folder_path, "tracking_frames.mp4"))
+
+        ati_video     = rp.load_video_via_decord(ati_video_path,     49)
+        revideo_video = rp.load_video_via_decord(revideo_video_path, 49)
+        gwtf_video    = rp.load_video_via_decord(gwtf_video_path,    49)
+
+        ati_video     = normalize_video(ati_video)
+        revideo_video = normalize_video(revideo_video)
+        gwtf_video    = normalize_video(gwtf_video)
+
+        out_output_video     = add_tracks(output_video,  counter_tracks_video)
+        ati_output_video     = add_tracks(ati_video,     counter_tracks_video)
+        revideo_output_video = add_tracks(revideo_video, counter_tracks_video)
+        gwtf_output_video    = add_tracks(gwtf_video,    counter_tracks_video)
+        out_counter_video    = add_tracks(counter_video, tracks_video        )
+
+        font_size=30
+        out_counter_video    = rgbyte(rp.labeled_images(out_counter_video,    'Input Video', font='Futura', size=font_size))
+        out_output_video     = rgbyte(rp.labeled_images(out_output_video,     'Option A',    font='Futura', size=font_size))
+        ati_output_video     = rgbyte(rp.labeled_images(ati_output_video,     'Option B',    font='Futura', size=font_size))
+        revideo_output_video = rgbyte(rp.labeled_images(revideo_output_video, 'Option C',    font='Futura', size=font_size))
+        gwtf_output_video    = rgbyte(rp.labeled_images(gwtf_output_video,    'Option D',    font='Futura', size=font_size))
+
+        #TODO: Shuffle them
+        cat_vid=rgbyte(rp.horizontally_concatenated_videos(out_counter_video,out_output_video,ati_output_video,revideo_output_video,gwtf_output_video))
+        
+        rp.save_video_mp4(cat_vid,out_path,framerate=15,backend='ffmpeg',show_progress=False)
+
+        return out_path
+    except Exception:
+        rp.print_stack_trace()
+        
+    return output
+
+files = rp.load_files(process, rp.shuffled(pairs), show_progress=True, num_threads=15, strict=False)
+files = rp.get_relative_paths(files)
+
+#Choose Files for Survey
+files = rp.unique(files,key=lambda x:rp.get_file_name(x)[len('ATI_0074--'):])
+
+html = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -120,28 +306,7 @@
     </div>
 
     <script>
-        const videos = [
-            "video_pairs_complete/Bichon + Corgi _ Bichon Stay Behind_copy3.mp4ATI_0025--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy3.mp4",
-            "video_pairs_complete/Bichon + Corgi _ Corgi Stay Behind.mp4ATI_0053--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind.mp4",
-            "video_pairs_complete/Blacks Freeze Camera.mp4ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4",
-            "video_pairs_complete/Blacks Freeze Camera_copy.mp4ATI_0038--[Seed 1515] Blacks Freeze Camera_copy.mp4",
-            "video_pairs_complete/Boat_ Move Test.mp4ATI_0004--[Seed 6227] Boat_ Move Test.mp4",
-            "video_pairs_complete/Candle Grab StopCam.mp4ATI_0065--[Seed 4764] Candle Grab StopCam.mp4",
-            "video_pairs_complete/Cheerleader.mp4ATI_0019--[Seed 5819] Cheerleader.mp4",
-            "video_pairs_complete/City Biker.mp4ATI_0065--[Seed 9567] City Biker.mp4",
-            "video_pairs_complete/Hot Air Baloons_ Slow camera, make baloons rise.mp4ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4",
-            "video_pairs_complete/Judge_ Walk In From Right + Zoom_copy1.mp4ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4",
-            "video_pairs_complete/Judge_ Walk Out.mp4ATI_0021--[Seed 8184] Judge_ Walk Out.mp4",
-            "video_pairs_complete/Judge_ Walk Out_copy1.mp4ATI_0032--[Seed 5176] Judge_ Walk Out_copy1.mp4",
-            "video_pairs_complete/Motorcycle Chase_ The motorcycle chases the car_copy1.mp4ATI_0074--[Seed 1579] Motorcycle Chase_ The motorcycle chases the car_copy1.mp4",
-            "video_pairs_complete/Move the car faster forward.mp4ATI_0099--[Seed 8917] Move the car faster forward.mp4",
-            "video_pairs_complete/Reverse Windmills.mp4ATI_0064--[Seed 9651] Reverse Windmills.mp4",
-            "video_pairs_complete/Shakycam.mp4ATI_0118--[Seed 9471] Shakycam.mp4",
-            "video_pairs_complete/Sora Basketball_ The ball goes into the hoop_copy3.mp4ATI_0071--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4",
-            "video_pairs_complete/Truck Before Cab_copy1.mp4ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4",
-            "video_pairs_complete/Truck Before Cab_copy1.mp4ATI_0055--[Seed 5072] Truck Before Cab_copy1.mp4",
-            "video_pairs_complete/[Failure] Stop Sign Lady_copy6.mp4ATI_0097--[Seed 4370] [Failure] Stop Sign Lady_copy6.mp4",
-        ];
+        const videos = VIDEO_STR;
         
         let results = {};
         
@@ -240,3 +405,7 @@
     </script>
 </body>
 </html>
+"""
+
+html = html.replace("VIDEO_STR",repr(files))
+rp.save_text_file(html, 'index.html')
