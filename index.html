@@ -59,11 +59,29 @@
             justify-content: center;
             gap: 30px;
         }
-        
+
         .option {
             font-size: 16px;
             display: flex;
             align-items: center;
+        }
+
+        .video-info {
+            background-color: #f0f8ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .video-info-item {
+            margin-bottom: 10px;
+        }
+
+        .video-info-label {
+            font-weight: bold;
+            color: #333;
+            margin-right: 8px;
         }
         
         input[type="radio"] {
@@ -120,7 +138,7 @@
     </div>
 
     <script>
-        const videos = ['video_pairs/1230><ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4', 'video_pairs/2130><ATI_0050--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy.mp4', 'video_pairs/2130><ATI_0087--[Seed 9567] City Biker.mp4', 'video_pairs/1302><ATI_0093--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind_copy.mp4', 'video_pairs/1230><ATI_0008--[Seed 6227] Boat_ Move Test.mp4', 'video_pairs/2301><ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4', 'video_pairs/2103><ATI_0118--[Seed 9471] Shakycam.mp4', 'video_pairs/3120><ATI_0064--[Seed 9651] Reverse Windmills.mp4', 'video_pairs/0312><ATI_0065--[Seed 4764] Candle Grab StopCam.mp4', 'video_pairs/3120><ATI_0028--[Seed 5819] Cheerleader.mp4', 'video_pairs/0132><ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4', 'video_pairs/3201><ATI_0052--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4', 'video_pairs/0321><ATI_0030--[Seed 8184] Judge_ Walk Out.mp4', 'video_pairs/1230><ATI_0099--[Seed 8917] Move the car faster forward.mp4', 'video_pairs/3012><ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4'];
+        const videos = ['video_pairs/0231><ATI_0087--[Seed 9567] City Biker.mp4', 'video_pairs/2310><ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4', 'video_pairs/1302><ATI_0030--[Seed 8184] Judge_ Walk Out.mp4', 'video_pairs/1230><ATI_0052--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4', 'video_pairs/3120><ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4', 'video_pairs/0231><ATI_0008--[Seed 6227] Boat_ Move Test.mp4', 'video_pairs/0132><ATI_0099--[Seed 8917] Move the car faster forward.mp4', 'video_pairs/1302><ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4', 'video_pairs/3021><ATI_0064--[Seed 9651] Reverse Windmills.mp4', 'video_pairs/0132><ATI_0050--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy.mp4', 'video_pairs/2130><ATI_0028--[Seed 5819] Cheerleader.mp4', 'video_pairs/2103><ATI_0118--[Seed 9471] Shakycam.mp4', 'video_pairs/3120><ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4', 'video_pairs/1203><ATI_0065--[Seed 4764] Candle Grab StopCam.mp4', 'video_pairs/1203><ATI_0093--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind_copy.mp4'];
         
         let results = {};
         
@@ -150,7 +168,34 @@
             video.autoplay = true;
             video.muted = true; // Required for autoplay in most browsers
             video.loop = true;
-            
+
+            // Add Prompt and Intent section
+            const videoInfo = document.createElement('div');
+            videoInfo.className = 'video-info';
+
+            const promptItem = document.createElement('div');
+            promptItem.className = 'video-info-item';
+            const promptLabel = document.createElement('span');
+            promptLabel.className = 'video-info-label';
+            promptLabel.textContent = 'Prompt:';
+            const promptText = document.createElement('span');
+            promptText.textContent = '[Prompt goes here]';
+            promptItem.appendChild(promptLabel);
+            promptItem.appendChild(promptText);
+
+            const intentItem = document.createElement('div');
+            intentItem.className = 'video-info-item';
+            const intentLabel = document.createElement('span');
+            intentLabel.className = 'video-info-label';
+            intentLabel.textContent = 'Intent:';
+            const intentText = document.createElement('span');
+            intentText.textContent = '[Intent goes here]';
+            intentItem.appendChild(intentLabel);
+            intentItem.appendChild(intentText);
+
+            videoInfo.appendChild(promptItem);
+            videoInfo.appendChild(intentItem);
+
             const questionsContainer = document.createElement('div');
             questionsContainer.className = 'questions';
             
@@ -206,8 +251,9 @@
             
             container.appendChild(title);
             container.appendChild(video);
+            container.appendChild(videoInfo);
             container.appendChild(questionsContainer);
-            
+
             return container;
         }
         
