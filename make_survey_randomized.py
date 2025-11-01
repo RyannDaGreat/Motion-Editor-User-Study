@@ -1,5 +1,6 @@
 import rp
 import random
+import sys
 
 chosen_names = [
     "[Seed 2] Kittycat Fish",
@@ -231,9 +232,16 @@ NUM_CHOICES=len(pairs[0][1])-1
 ################# PROCESSING THE VIDEOS ###################
 ###########################################################
 
+# Check for --skip-videos or --html-only argument
+skip_videos = '--skip-videos' in sys.argv or '--html-only' in sys.argv
 
-files = rp.load_files(process, rp.shuffled(pairs), show_progress=True, num_threads=5, strict=False)
-files = rp.get_relative_paths(files)
+if skip_videos:
+    print("Skipping video generation, using existing videos...")
+    files = rp.glob('video_pairs/*.mp4')
+    files = rp.get_relative_paths(files)
+else:
+    files = rp.load_files(process, rp.shuffled(pairs), show_progress=True, num_threads=5, strict=False)
+    files = rp.get_relative_paths(files)
 
 
 ########################################################
@@ -260,6 +268,7 @@ html = r"""<!DOCTYPE html>
             background-color: white;
             margin-bottom: 30px;
             padding: 20px;
+            padding-bottom: 0;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
@@ -299,14 +308,42 @@ html = r"""<!DOCTYPE html>
         
         .options {
             display: flex;
-            justify-content: center;
-            gap: 30px;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .option {
-            font-size: 16px;
+            flex: 1;
+            height: 60px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 3px solid #ddd;
+            background-color: #f9f9f9;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .option:hover {
+            background-color: #e3f2fd;
+            border-color: #2196F3;
+        }
+
+        .option.selected {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .spacer {
+            flex: 1;
         }
 
         .video-info {
@@ -455,18 +492,25 @@ html = r"""<!DOCTYPE html>
             questions.forEach((questionText, qIndex) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                
+
                 const questionTitle = document.createElement('div');
                 questionTitle.className = 'question-title';
                 questionTitle.textContent = questionText;
-                
+
                 const options = document.createElement('div');
                 options.className = 'options';
-                
+
+                // Add spacer for Input section (first 20% of video)
+                const spacer = document.createElement('div');
+                spacer.className = 'spacer';
+                options.appendChild(spacer);
+
                 const optionLabels = ['A', 'B', 'C', 'D'];
                 optionLabels.forEach((label, mIndex) => {
-                    const optionLabel = document.createElement('label');
-                    optionLabel.className = 'option';
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = label;
+
                     const radio = document.createElement('input');
                     radio.type = 'radio';
                     radio.name = `video_${index}_q${qIndex}`;
@@ -475,18 +519,28 @@ html = r"""<!DOCTYPE html>
                     const original_method = originalMethods[permuted_method_index];
                     radio.value = original_method;
 
-                    radio.addEventListener('change', () => {
-                        if (radio.checked) {
-                            if (!results[videoPath]) results[videoPath] = {};
-                            results[videoPath][`q${qIndex + 1}`] = radio.value;
-                            updateResults();
-                        }
+                    optionDiv.appendChild(radio);
+
+                    optionDiv.addEventListener('click', () => {
+                        // Remove selected class from all options in this question
+                        options.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+
+                        // Add selected class to this option
+                        optionDiv.classList.add('selected');
+
+                        // Check the radio button
+                        radio.checked = true;
+
+                        if (!results[videoPath]) results[videoPath] = {};
+                        results[videoPath][`q${qIndex + 1}`] = radio.value;
+                        updateResults();
                     });
-                    optionLabel.appendChild(radio);
-                    optionLabel.appendChild(document.createTextNode(label));
-                    options.appendChild(optionLabel);
+
+                    options.appendChild(optionDiv);
                 });
-                
+
                 questionDiv.appendChild(questionTitle);
                 questionDiv.appendChild(options);
                 questionsContainer.appendChild(questionDiv);

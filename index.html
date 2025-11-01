@@ -56,14 +56,42 @@
         
         .options {
             display: flex;
-            justify-content: center;
-            gap: 30px;
+            width: 100%;
+            margin-top: 10px;
         }
 
         .option {
-            font-size: 16px;
+            flex: 1;
+            height: 60px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 3px solid #ddd;
+            background-color: #f9f9f9;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .option:hover {
+            background-color: #e3f2fd;
+            border-color: #2196F3;
+        }
+
+        .option.selected {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .spacer {
+            flex: 1;
         }
 
         .video-info {
@@ -138,7 +166,7 @@
     </div>
 
     <script>
-        const videos = ['video_pairs/0231><ATI_0087--[Seed 9567] City Biker.mp4', 'video_pairs/2310><ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4', 'video_pairs/1302><ATI_0030--[Seed 8184] Judge_ Walk Out.mp4', 'video_pairs/1230><ATI_0052--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4', 'video_pairs/3120><ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4', 'video_pairs/0231><ATI_0008--[Seed 6227] Boat_ Move Test.mp4', 'video_pairs/0132><ATI_0099--[Seed 8917] Move the car faster forward.mp4', 'video_pairs/1302><ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4', 'video_pairs/3021><ATI_0064--[Seed 9651] Reverse Windmills.mp4', 'video_pairs/0132><ATI_0050--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy.mp4', 'video_pairs/2130><ATI_0028--[Seed 5819] Cheerleader.mp4', 'video_pairs/2103><ATI_0118--[Seed 9471] Shakycam.mp4', 'video_pairs/3120><ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4', 'video_pairs/1203><ATI_0065--[Seed 4764] Candle Grab StopCam.mp4', 'video_pairs/1203><ATI_0093--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind_copy.mp4'];
+        const videos = ['video_pairs/2013><ATI_0093--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind_copy.mp4', 'video_pairs/0132><ATI_0028--[Seed 5819] Cheerleader.mp4', 'video_pairs/1230><ATI_0087--[Seed 9567] City Biker.mp4', 'video_pairs/2301><ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4', 'video_pairs/0132><ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4', 'video_pairs/3012><ATI_0052--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4', 'video_pairs/0312><ATI_0065--[Seed 4764] Candle Grab StopCam.mp4', 'video_pairs/2301><ATI_0050--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy.mp4', 'video_pairs/2130><ATI_0087--[Seed 9567] City Biker.mp4', 'video_pairs/3201><ATI_0052--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4', 'video_pairs/3120><ATI_0064--[Seed 9651] Reverse Windmills.mp4', 'video_pairs/1023><ATI_0099--[Seed 8917] Move the car faster forward.mp4', 'video_pairs/3120><ATI_0028--[Seed 5819] Cheerleader.mp4', 'video_pairs/2310><ATI_0008--[Seed 6227] Boat_ Move Test.mp4', 'video_pairs/3012><ATI_0065--[Seed 4764] Candle Grab StopCam.mp4', 'video_pairs/0123><ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4', 'video_pairs/0321><ATI_0064--[Seed 9651] Reverse Windmills.mp4', 'video_pairs/2031><ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4', 'video_pairs/0321><ATI_0030--[Seed 8184] Judge_ Walk Out.mp4', 'video_pairs/1230><ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4', 'video_pairs/3012><ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4', 'video_pairs/2310><ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4', 'video_pairs/0123><ATI_0118--[Seed 9471] Shakycam.mp4', 'video_pairs/1230><ATI_0008--[Seed 6227] Boat_ Move Test.mp4', 'video_pairs/2103><ATI_0118--[Seed 9471] Shakycam.mp4', 'video_pairs/1302><ATI_0093--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind_copy.mp4', 'video_pairs/3021><ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4', 'video_pairs/1230><ATI_0099--[Seed 8917] Move the car faster forward.mp4', 'video_pairs/0123><ATI_0030--[Seed 8184] Judge_ Walk Out.mp4', 'video_pairs/2130><ATI_0050--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy.mp4'];
         
         let results = {};
         
@@ -212,18 +240,25 @@
             questions.forEach((questionText, qIndex) => {
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question';
-                
+
                 const questionTitle = document.createElement('div');
                 questionTitle.className = 'question-title';
                 questionTitle.textContent = questionText;
-                
+
                 const options = document.createElement('div');
                 options.className = 'options';
-                
+
+                // Add spacer for Input section (first 20% of video)
+                const spacer = document.createElement('div');
+                spacer.className = 'spacer';
+                options.appendChild(spacer);
+
                 const optionLabels = ['A', 'B', 'C', 'D'];
                 optionLabels.forEach((label, mIndex) => {
-                    const optionLabel = document.createElement('label');
-                    optionLabel.className = 'option';
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    optionDiv.textContent = label;
+
                     const radio = document.createElement('input');
                     radio.type = 'radio';
                     radio.name = `video_${index}_q${qIndex}`;
@@ -232,18 +267,28 @@
                     const original_method = originalMethods[permuted_method_index];
                     radio.value = original_method;
 
-                    radio.addEventListener('change', () => {
-                        if (radio.checked) {
-                            if (!results[videoPath]) results[videoPath] = {};
-                            results[videoPath][`q${qIndex + 1}`] = radio.value;
-                            updateResults();
-                        }
+                    optionDiv.appendChild(radio);
+
+                    optionDiv.addEventListener('click', () => {
+                        // Remove selected class from all options in this question
+                        options.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+
+                        // Add selected class to this option
+                        optionDiv.classList.add('selected');
+
+                        // Check the radio button
+                        radio.checked = true;
+
+                        if (!results[videoPath]) results[videoPath] = {};
+                        results[videoPath][`q${qIndex + 1}`] = radio.value;
+                        updateResults();
                     });
-                    optionLabel.appendChild(radio);
-                    optionLabel.appendChild(document.createTextNode(label));
-                    options.appendChild(optionLabel);
+
+                    options.appendChild(optionDiv);
                 });
-                
+
                 questionDiv.appendChild(questionTitle);
                 questionDiv.appendChild(options);
                 questionsContainer.appendChild(questionDiv);
