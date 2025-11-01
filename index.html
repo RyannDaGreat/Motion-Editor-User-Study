@@ -16,48 +16,64 @@
         .video-container {
             background-color: white;
             margin-bottom: 30px;
-            padding: 20px;
+            padding: 20px 0 0 0;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
-        
+
         .video-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 15px;
             text-align: center;
+            padding: 0 20px;
         }
-        
+
         video {
-            width: 100%;
-            /* max-width: 600px; */
+            width: calc(100% - 40px);
             height: auto;
             display: block;
-            margin: 0 auto 20px auto;
+            margin: 0 20px;
         }
-        
+
         .questions {
-            margin-bottom: 20px;
+            margin: 0;
+            padding: 0 0 20px 0;
+            position: relative;
         }
-        
+
         .question {
             background-color: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 15px 0 0 0;
+            margin: 0 20px 15px 20px;
             border-radius: 5px;
-            border-left: 4px solid #007bff;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .question::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #007bff;
+            border-radius: 5px 0 0 5px;
+        }
+
         .question-title {
             font-weight: bold;
             margin-bottom: 10px;
+            padding: 0 15px;
             color: #333;
         }
-        
+
         .options {
             display: flex;
             width: 100%;
-            margin-top: 10px;
+            margin: 10px 0 15px 0;
         }
 
         .option {
@@ -73,11 +89,30 @@
             background-color: #f9f9f9;
             transition: all 0.2s ease;
             user-select: none;
+            position: relative;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            height: 0;
+            max-height: 100vh;
+            background: linear-gradient(to top, rgba(33, 150, 243, 0.3), rgba(33, 150, 243, 0));
+            transition: height 0.3s ease;
+            pointer-events: none;
+            z-index: -1;
         }
 
         .option:hover {
             background-color: #e3f2fd;
             border-color: #2196F3;
+        }
+
+        .option:hover::before {
+            height: 400px;
         }
 
         .option.selected {
@@ -97,7 +132,7 @@
         .video-info {
             background-color: #f0f8ff;
             padding: 15px;
-            margin-bottom: 20px;
+            margin: 0 20px 0 20px;
             border-radius: 5px;
             border-left: 4px solid #4CAF50;
         }
