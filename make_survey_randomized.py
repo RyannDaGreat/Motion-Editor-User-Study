@@ -302,11 +302,29 @@ html = r"""<!DOCTYPE html>
             justify-content: center;
             gap: 30px;
         }
-        
+
         .option {
             font-size: 16px;
             display: flex;
             align-items: center;
+        }
+
+        .video-info {
+            background-color: #f0f8ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .video-info-item {
+            margin-bottom: 10px;
+        }
+
+        .video-info-label {
+            font-weight: bold;
+            color: #333;
+            margin-right: 8px;
         }
         
         input[type="radio"] {
@@ -393,7 +411,34 @@ html = r"""<!DOCTYPE html>
             video.autoplay = true;
             video.muted = true; // Required for autoplay in most browsers
             video.loop = true;
-            
+
+            // Add Prompt and Intent section
+            const videoInfo = document.createElement('div');
+            videoInfo.className = 'video-info';
+
+            const promptItem = document.createElement('div');
+            promptItem.className = 'video-info-item';
+            const promptLabel = document.createElement('span');
+            promptLabel.className = 'video-info-label';
+            promptLabel.textContent = 'Prompt:';
+            const promptText = document.createElement('span');
+            promptText.textContent = '[Prompt goes here]';
+            promptItem.appendChild(promptLabel);
+            promptItem.appendChild(promptText);
+
+            const intentItem = document.createElement('div');
+            intentItem.className = 'video-info-item';
+            const intentLabel = document.createElement('span');
+            intentLabel.className = 'video-info-label';
+            intentLabel.textContent = 'Intent:';
+            const intentText = document.createElement('span');
+            intentText.textContent = '[Intent goes here]';
+            intentItem.appendChild(intentLabel);
+            intentItem.appendChild(intentText);
+
+            videoInfo.appendChild(promptItem);
+            videoInfo.appendChild(intentItem);
+
             const questionsContainer = document.createElement('div');
             questionsContainer.className = 'questions';
             
@@ -449,8 +494,9 @@ html = r"""<!DOCTYPE html>
             
             container.appendChild(title);
             container.appendChild(video);
+            container.appendChild(videoInfo);
             container.appendChild(questionsContainer);
-            
+
             return container;
         }
         
