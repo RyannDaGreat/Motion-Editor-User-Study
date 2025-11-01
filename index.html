@@ -19,7 +19,6 @@
             padding: 20px 0 0 0;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
         }
 
         .video-title {
@@ -49,7 +48,6 @@
             margin: 0 20px 15px 20px;
             border-radius: 5px;
             position: relative;
-            overflow: hidden;
         }
 
         .question::before {
@@ -99,26 +97,30 @@
             left: 0;
             right: 0;
             height: 0;
-            max-height: 100vh;
             background: linear-gradient(to top, rgba(33, 150, 243, 0.3), rgba(33, 150, 243, 0));
             transition: height 0.3s ease;
             pointer-events: none;
-            z-index: -1;
+            z-index: 100;
         }
 
         .option:hover {
             background-color: #e3f2fd;
             border-color: #2196F3;
+            z-index: 101;
         }
 
         .option:hover::before {
-            height: 400px;
+            height: var(--beam-height, 2000px);
         }
 
         .option.selected {
             background-color: #4CAF50;
             border-color: #4CAF50;
             color: white;
+        }
+
+        .option.selected:hover::before {
+            background: linear-gradient(to top, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0));
         }
 
         .option input[type="radio"] {
@@ -348,8 +350,40 @@
             updateResults();
         }
         
+        // Calculate dynamic beam heights for each button
+        function updateBeamHeights() {
+            const videoContainers = document.querySelectorAll('.video-container');
+
+            videoContainers.forEach(container => {
+                const video = container.querySelector('video');
+                const options = container.querySelectorAll('.option');
+
+                if (video && options.length > 0) {
+                    const videoRect = video.getBoundingClientRect();
+
+                    options.forEach(option => {
+                        const optionRect = option.getBoundingClientRect();
+                        // Calculate distance from top of button to bottom of video
+                        const beamHeight = optionRect.top - videoRect.bottom;
+
+                        if (beamHeight > 0) {
+                            option.style.setProperty('--beam-height', beamHeight + 'px');
+                        }
+                    });
+                }
+            });
+        }
+
         // Initialize the study when the page loads
-        document.addEventListener('DOMContentLoaded', initializeStudy);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeStudy();
+
+            // Set beam heights after videos load
+            setTimeout(updateBeamHeights, 100);
+
+            // Update on window resize
+            window.addEventListener('resize', updateBeamHeights);
+        });
     </script>
 </body>
 </html>
