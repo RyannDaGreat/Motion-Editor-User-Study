@@ -2,6 +2,8 @@ import rp
 import random
 import sys
 
+rp.seed_all(42)
+
 chosen_names = [
     "[Seed 2] Kittycat Fish",
     "[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise",
@@ -370,7 +372,7 @@ html = r"""<!DOCTYPE html>
             color: white;
         }
 
-        .option.selected:hover::before {
+        .option.selected::before {
             background: linear-gradient(to top, rgba(76, 175, 80, 0.3), rgba(76, 175, 80, 0));
         }
 
