@@ -238,9 +238,9 @@
             </div>
         </div>
         <p><strong>Instructions:</strong></p>
-        <p>You will be shown videos comparing five different motion editing methods side by side: Input (with original motion), Ours, ATI, ReVideo, and GWTF. For each video, please answer the three questions below by selecting your preference.</p>
+        <p>You will be shown videos comparing four different motion editing methods side by side: Input (with original motion), and four different output videos. For each video, please answer the three questions below by selecting your preference.</p>
         <p><strong>Note:</strong> All methods receive the same input video and desired motion trajectories. Your task is to evaluate which method produces better results.</p>
-        <p><strong>How to evaluate:</strong> The video edits are indicated by the change in position of the colored dots (shown on Input, Ours, and ATI). Look at matching dots from input to output to determine the intended edits and how well each method preserves content while achieving the desired motion changes.</p>
+        <p><strong>How to evaluate:</strong> The video edits are indicated by the change in position of the colored dots. Look at matching dots from input to output to determine the intended edits and how well each method preserves content while achieving the desired motion changes.</p>
         <p><strong>When finished:</strong> Click the email link at the bottom of the page and it will prepare an email with your results to send.</p>
     </div>
     
@@ -357,7 +357,8 @@
                 "Q3: Which method produces the overall best edit?"
             ];
 
-            const originalMethods = ['Ours', 'ATI', 'ReVideo', 'GWTF'];
+            // const originalMethods = ['Ours', 'ATI', 'ReVideo', 'GWTF'];
+            const originalMethods = ['A', 'B', 'C', 'D'];
             const permutation_string = videoPath.split('/')[1].split('><')[0];
             const permutation = permutation_string.split('').map(Number);
             
