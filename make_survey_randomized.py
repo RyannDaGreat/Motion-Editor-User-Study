@@ -372,14 +372,22 @@ html = r"""<!DOCTYPE html>
             position: absolute;
             top: 0;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: all 0.3s ease;
             pointer-events: none;
+            box-sizing: border-box;
         }
 
         .video-overlay.dimmed {
             opacity: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .video-overlay.highlighted {
+            opacity: 1;
+            background-color: transparent;
+            border: 4px solid #2196F3;
+            box-shadow: 0 0 20px rgba(33, 150, 243, 0.6);
         }
 
         .questions {
@@ -710,9 +718,11 @@ html = r"""<!DOCTYPE html>
                         // When hovering button at index mIndex (0=A, 1=B, 2=C, 3=D)
                         // Dim all video sections EXCEPT Input (section 0) and the hovered section (section mIndex+1)
                         overlays.forEach((overlay, overlayIndex) => {
-                            // Section 0 is Input - never dim
-                            // Section mIndex+1 is the hovered button's section - don't dim
-                            if (overlayIndex !== 0 && overlayIndex !== mIndex + 1) {
+                            // Section 0 is Input - never dim, add border
+                            // Section mIndex+1 is the hovered button's section - don't dim, add border
+                            if (overlayIndex === 0 || overlayIndex === mIndex + 1) {
+                                overlay.classList.add('highlighted');
+                            } else {
                                 overlay.classList.add('dimmed');
                             }
                         });
@@ -722,6 +732,7 @@ html = r"""<!DOCTYPE html>
                         const overlays = container.querySelectorAll('.video-overlay');
                         overlays.forEach(overlay => {
                             overlay.classList.remove('dimmed');
+                            overlay.classList.remove('highlighted');
                         });
                     });
 
