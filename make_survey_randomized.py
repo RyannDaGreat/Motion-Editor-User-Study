@@ -539,8 +539,22 @@ html = r"""<!DOCTYPE html>
 </head>
 <body>
     <h1 style="text-align: center; margin-bottom: 30px;">Video User Study</h1>
-    
+
     <div style="background-color: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <p style="font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center;">Tutorial Video - Please Watch Before Proceeding</p>
+        <div style="max-width: 70%; margin: 0 auto 20px auto;">
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px;">
+                <iframe
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px;"
+                    src="https://www.youtube.com/embed/CINEmkkB3Kg"
+                    title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
         <p><strong>Instructions:</strong></p>
         <p>You will be shown videos comparing five different motion editing methods side by side: Input (with original motion), Ours, ATI, ReVideo, and GWTF. For each video, please answer the three questions below by selecting your preference.</p>
         <p><strong>Note:</strong> All methods receive the same input video and desired motion trajectories. Your task is to evaluate which method produces better results.</p>
