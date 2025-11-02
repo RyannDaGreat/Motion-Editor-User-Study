@@ -1,6 +1,7 @@
 import rp
 import random
 import sys
+import json
 
 rp.seed_all(42)
 
@@ -230,6 +231,70 @@ def process(pair):
 pairs = get_pairs()
 NUM_CHOICES=len(pairs[0][1])-1
 
+# Dictionary mapping video filenames to their prompts and intents
+video_metadata = {
+    "ATI_0030--[Seed 8184] Judge_ Walk Out.mp4": {
+        "prompt": "A judge walking into an office from the left of the screen, then sitting down",
+        "intent": "Make the judge walk in from the right instead of the left, keeping the same judge and office"
+    },
+    "ATI_0064--[Seed 9651] Reverse Windmills.mp4": {
+        "prompt": "Two windmills both turning clockwise",
+        "intent": "Make one windmill turn clockwise and the other turn counterclockwise"
+    },
+    "ATI_0050--[Seed 7945] Bichon + Corgi _ Bichon Stay Behind_copy.mp4": {
+        "prompt": "Two dogs (a corgi and a bichon) racing, both tying",
+        "intent": "Make the corgi win the race by running faster, leaving the bichon behind"
+    },
+    "ATI_0052--[Seed 6303] Sora Basketball_ The ball goes into the hoop_copy3.mp4": {
+        "prompt": "A basketball bouncing off a hoop",
+        "intent": "Make the basketball go through the hoop while keeping the same camera movement and background"
+    },
+    "ATI_0093--[Seed 9995] Bichon + Corgi _ Corgi Stay Behind_copy.mp4": {
+        "prompt": "Two dogs (a corgi and a bichon) racing, both tying",
+        "intent": "Make the bichon (white dog) win the race, coming out first while the corgi lags behind"
+    },
+    "ATI_0087--[Seed 9567] City Biker.mp4": {
+        "prompt": "A camera following a bicyclist through a city, with the bicyclist not visible in the first frame and far to the left",
+        "intent": "Make the bicyclist visible throughout and bike more in the center of the road (move to the right), while revealing the same buildings"
+    },
+    "ATI_0008--[Seed 6227] Boat_ Move Test.mp4": {
+        "prompt": "A boat driving through a lake as the camera pans up and the boat drives forwards, revealing mountains",
+        "intent": "Make the camera pan down instead of up while still revealing the same mountains, and make the boat move to the left instead of forwards"
+    },
+    "ATI_0040--[Seed 5072] Truck Before Cab_copy1.mp4": {
+        "prompt": "A taxi driving first with a green truck trailing behind",
+        "intent": "Make the green truck appear first, then have the taxi speed up ahead of it"
+    },
+    "ATI_0000--[Seed 8464] Blacks Freeze Camera.mp4": {
+        "prompt": "A swan in a lake with the camera following the swan as it moves forwards",
+        "intent": "Make the camera stay still while the swan continues swimming forwards"
+    },
+    "ATI_0045--[Seed 5176] Judge_ Walk In From Right + Zoom_copy1.mp4": {
+        "prompt": "A judge walking into a room from the left of the screen",
+        "intent": "Keep the judge walking in from the left, but add a dolly zoom to zoom the camera in while maintaining the same background"
+    },
+    "ATI_0028--[Seed 5819] Cheerleader.mp4": {
+        "prompt": "A cheerleader holding up a pom-pom but not very excited",
+        "intent": "Make the cheerleader raise her arm higher following the designated motion pattern, keeping the same person and gym"
+    },
+    "ATI_0118--[Seed 9471] Shakycam.mp4": {
+        "prompt": "A camera panning towards the right with jumpy movement",
+        "intent": "Stabilize the camera to make it smoother while still revealing the same foliage, grass, and trees"
+    },
+    "ATI_0089--[Seed 875] Hot Air Baloons_ Slow camera, make baloons rise.mp4": {
+        "prompt": "Hot air balloons, with some not rising up",
+        "intent": "Make the hot air balloons rise up (including those invisible at the start) while the camera moves the same way and reveals the same mountains and background"
+    },
+    "ATI_0065--[Seed 4764] Candle Grab StopCam.mp4": {
+        "prompt": "A person grabbing a candle with the camera moving",
+        "intent": "Keep the person grabbing the candle but make the camera stay still, keeping the same candle and hand"
+    },
+    "ATI_0099--[Seed 8917] Move the car faster forward.mp4": {
+        "prompt": "A car driving on a road in the desert, with the camera zooming past the car causing it to go off screen",
+        "intent": "Make the car drive forwards and stay visible throughout the entire video"
+    }
+}
+
 ###########################################################
 ################# PROCESSING THE VIDEOS ###################
 ###########################################################
@@ -282,11 +347,39 @@ html = r"""<!DOCTYPE html>
             padding: 0 20px;
         }
 
-        video {
+        .video-wrapper {
+            position: relative;
             width: calc(100% - 40px);
+            margin: 0 20px;
+        }
+
+        video {
+            width: 100%;
             height: auto;
             display: block;
-            margin: 0 20px;
+        }
+
+        .video-overlays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .video-overlay.dimmed {
+            opacity: 1;
         }
 
         .questions {
@@ -457,8 +550,20 @@ html = r"""<!DOCTYPE html>
 
     <script>
         const videos = VIDEO_STR;
-        
+
+        const videoMetadata = VIDEO_METADATA;
+
         let results = {};
+
+        function getMetadata(videoPath) {
+            // Extract filename from path like "video_pairs/1302><ATI_0030--[Seed 8184] Judge_ Walk Out.mp4"
+            const parts = videoPath.split('><');
+            if (parts.length > 1) {
+                const filename = parts[1];
+                return videoMetadata[filename] || { prompt: '[Prompt goes here]', intent: '[Intent goes here]' };
+            }
+            return { prompt: '[Prompt goes here]', intent: '[Intent goes here]' };
+        }
         
         function updateResults() {
             const resultsTextarea = document.getElementById('results');
@@ -480,6 +585,9 @@ html = r"""<!DOCTYPE html>
             title.className = 'video-title';
             title.textContent = `Video Pair ${index + 1}`;
             
+            const videoWrapper = document.createElement('div');
+            videoWrapper.className = 'video-wrapper';
+
             const video = document.createElement('video');
             video.src = videoPath;
             video.controls = true;
@@ -487,9 +595,29 @@ html = r"""<!DOCTYPE html>
             video.muted = true; // Required for autoplay in most browsers
             video.loop = true;
 
+            // Create overlay container
+            const overlaysContainer = document.createElement('div');
+            overlaysContainer.className = 'video-overlays';
+
+            // Create 5 overlay divs for each video section (Input, A, B, C, D)
+            // Each section is 20% wide
+            for (let i = 0; i < 5; i++) {
+                const overlay = document.createElement('div');
+                overlay.className = 'video-overlay';
+                overlay.style.left = `${i * 20}%`;
+                overlay.style.width = '20%';
+                overlay.dataset.sectionIndex = i;
+                overlaysContainer.appendChild(overlay);
+            }
+
+            videoWrapper.appendChild(video);
+            videoWrapper.appendChild(overlaysContainer);
+
             // Add Prompt and Intent section
             const videoInfo = document.createElement('div');
             videoInfo.className = 'video-info';
+
+            const metadata = getMetadata(videoPath);
 
             const promptItem = document.createElement('div');
             promptItem.className = 'video-info-item';
@@ -497,7 +625,7 @@ html = r"""<!DOCTYPE html>
             promptLabel.className = 'video-info-label';
             promptLabel.textContent = 'Prompt:';
             const promptText = document.createElement('span');
-            promptText.textContent = '[Prompt goes here]';
+            promptText.textContent = metadata.prompt;
             promptItem.appendChild(promptLabel);
             promptItem.appendChild(promptText);
 
@@ -507,7 +635,7 @@ html = r"""<!DOCTYPE html>
             intentLabel.className = 'video-info-label';
             intentLabel.textContent = 'Intent:';
             const intentText = document.createElement('span');
-            intentText.textContent = '[Intent goes here]';
+            intentText.textContent = metadata.intent;
             intentItem.appendChild(intentLabel);
             intentItem.appendChild(intentText);
 
@@ -576,6 +704,27 @@ html = r"""<!DOCTYPE html>
                         updateResults();
                     });
 
+                    // Add hover listeners for dimming effect
+                    optionDiv.addEventListener('mouseenter', () => {
+                        const overlays = container.querySelectorAll('.video-overlay');
+                        // When hovering button at index mIndex (0=A, 1=B, 2=C, 3=D)
+                        // Dim all video sections EXCEPT Input (section 0) and the hovered section (section mIndex+1)
+                        overlays.forEach((overlay, overlayIndex) => {
+                            // Section 0 is Input - never dim
+                            // Section mIndex+1 is the hovered button's section - don't dim
+                            if (overlayIndex !== 0 && overlayIndex !== mIndex + 1) {
+                                overlay.classList.add('dimmed');
+                            }
+                        });
+                    });
+
+                    optionDiv.addEventListener('mouseleave', () => {
+                        const overlays = container.querySelectorAll('.video-overlay');
+                        overlays.forEach(overlay => {
+                            overlay.classList.remove('dimmed');
+                        });
+                    });
+
                     options.appendChild(optionDiv);
                 });
 
@@ -585,7 +734,7 @@ html = r"""<!DOCTYPE html>
             });
             
             container.appendChild(title);
-            container.appendChild(video);
+            container.appendChild(videoWrapper);
             container.appendChild(videoInfo);
             container.appendChild(questionsContainer);
 
@@ -642,5 +791,10 @@ html = r"""<!DOCTYPE html>
 </html>
 """
 
-html = html.replace("VIDEO_STR",repr(files))
+html = html.replace("VIDEO_STR", repr(files))
+
+# Convert metadata dict to JSON for JavaScript
+metadata_json = json.dumps(video_metadata)
+html = html.replace("VIDEO_METADATA", metadata_json)
+
 rp.save_text_file(html, 'index.html')
